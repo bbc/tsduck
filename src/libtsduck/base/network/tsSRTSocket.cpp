@@ -47,8 +47,8 @@ void ts::SRTSocket::defineArgs(ts::Args& args)
               u"Do not use unless completely necessary.");
 
     args.option(u"local-interface", 0, Args::STRING);
-    args.help(u"local-interface", u"address",
-              u"In caller mode, use the specified local IP interface for outgoing connections. "
+    args.help(u"local-interface", u"address[:port]",
+              u"In caller mode, use the specified local IP interface for outgoing connections.  Optionally a fixed port can be specified too."
               u"This option is incompatible with --listener.");
 
     args.option(u"conn-timeout", 0, Args::INTEGER, 0, 1, 0, (1 << 20));
@@ -698,12 +698,10 @@ bool ts::SRTSocket::setAddressesInternal(const UString& listener_addr, const USt
             report.error(u"specify either a listener address or a local outgoing interface for caller mode but not both");
             return false;
         }
-        IPv4Address local_ip;
-        if (!local_ip.resolve(local_addr, report)) {
+        _guts->local_address.resolve(local_addr, report);
+        if (!_guts->local_address.hasAddress()) {
+            report.error(u"missing address in local caller address '%s'", local_addr);
             return false;
-        }
-        _guts->local_address.setAddress(local_ip);
-        _guts->local_address.clearPort();
     }
 
     // Listener address, also used in rendezvous mode.
