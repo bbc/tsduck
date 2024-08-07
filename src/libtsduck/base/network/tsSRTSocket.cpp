@@ -702,6 +702,7 @@ bool ts::SRTSocket::setAddressesInternal(const UString& listener_addr, const USt
         if (!_guts->local_address.hasAddress()) {
             report.error(u"missing address in local caller address '%s'", local_addr);
             return false;
+        }
     }
 
     // Listener address, also used in rendezvous mode.
