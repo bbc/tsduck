@@ -50,7 +50,7 @@ bool ts::SRTInputPlugin::getOptions()
 
     // Get command line arguments for superclass and socket.
     return AbstractDatagramInputPlugin::getOptions() &&
-           _sock.setAddresses(rendezvous, remote, IPAddress(), *this) &&
+           _sock.setAddresses(rendezvous, remote, IPSocketAddress(), *this) &&
            _sock.loadArgs(duck, *this);
 }
 

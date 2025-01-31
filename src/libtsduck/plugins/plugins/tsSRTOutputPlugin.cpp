@@ -62,7 +62,7 @@ bool ts::SRTOutputPlugin::getOptions()
     _multiple = present(u"multiple");
     getChronoValue(_restart_delay, u"restart-delay");
 
-    return _sock.setAddresses(listener, rendezvous, IPAddress(), *this) &&
+    return _sock.setAddresses(listener, rendezvous, IPSocketAddress(), *this) &&
            _sock.loadArgs(duck, *this) &&
            _datagram.loadArgs(duck, *this);
 }

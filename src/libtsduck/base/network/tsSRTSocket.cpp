@@ -60,9 +60,9 @@ void ts::SRTSocket::defineArgs(ts::Args& args)
               u"With --listener, disable the reuse port socket option. "
               u"Do not use unless completely necessary.");
 
-    args.option(u"local-interface", 0, Args::IPADDR);
-    args.help(u"local-interface",
-              u"In caller mode, use the specified local IP interface for outgoing connections. "
+    args.option(u"local-interface", 0, Args::IPSOCKADDR_OP);
+    args.help(u"local-interface", u"address[:port]",
+              u"In caller mode, use the specified local IP interface for outgoing connections.  Optionally a fixed port can be specified too."
               u"This option is incompatible with --listener.");
 
     args.option(u"conn-timeout", 0, Args::INTEGER, 0, 1, 0, (1 << 20));
@@ -302,7 +302,7 @@ bool ts::SRTSocket::getSockOpt(int, const char*, void*, int&, Report& report) co
 int  ts::SRTSocket::getSocket() const { return -1; }
 bool ts::SRTSocket::getMessageApi() const { return false; }
 ts::UString ts::SRTSocket::GetLibraryVersion() { return NOSRT_ERROR_MSG; }
-bool ts::SRTSocket::setAddressesInternal(const IPSocketAddress&, const IPSocketAddress&, const IPAddress&, bool, Report& report) NOSRT_ERROR
+bool ts::SRTSocket::setAddressesInternal(const IPSocketAddress&, const IPSocketAddress&, const IPSocketAddress&, bool, Report& report) NOSRT_ERROR
 size_t ts::SRTSocket::totalSentBytes() const { return 0; }
 size_t ts::SRTSocket::totalReceivedBytes() const { return 0; }
 
@@ -658,7 +658,7 @@ bool ts::SRTSocket::peerDisconnected() const
 // Preset local and remote socket addresses in string form.
 //----------------------------------------------------------------------------
 
-bool ts::SRTSocket::setAddressesInternal(const IPSocketAddress& listener, const IPSocketAddress& caller, const IPAddress& local, bool reset, Report& report)
+bool ts::SRTSocket::setAddressesInternal(const IPSocketAddress& listener, const IPSocketAddress& caller, const IPSocketAddress& local, bool reset, Report& report)
 {
     // Reset the addresses if needed.
     if (reset) {
@@ -689,8 +689,7 @@ bool ts::SRTSocket::setAddressesInternal(const IPSocketAddress& listener, const 
             report.error(u"specify either a listener address or a local outgoing interface for caller mode but not both");
             return false;
         }
-        _guts->local_address.setAddress(local);
-        _guts->local_address.clearPort();
+        _guts->local_address=local;
     }
 
     // Listener address is also used in rendezvous mode.
@@ -716,10 +715,10 @@ bool ts::SRTSocket::loadArgs(DuckContext& duck, Args& args)
     // Resolve caller/listener/rendezvous addresses.
     IPSocketAddress listener;
     IPSocketAddress caller;
-    IPAddress local;
+    IPSocketAddress local;
     args.getSocketValue(listener, u"listener");
     args.getSocketValue(caller, u"caller");
-    args.getIPValue(local, u"local-interface");
+    args.getSocketValue(local, u"local-interface");
 
     if (!setAddressesInternal(listener, caller, local, false, args)) {
         return false;

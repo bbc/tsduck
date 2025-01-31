@@ -129,7 +129,7 @@ namespace ts {
         //! @param [in,out] report Where to report error.
         //! @return True on success, false on error.
         //!
-        bool setAddresses(const IPSocketAddress& listener, const IPSocketAddress& caller, const IPAddress& local = IPAddress(), Report& report = CERR)
+        bool setAddresses(const IPSocketAddress& listener, const IPSocketAddress& caller, const IPSocketAddress& local = IPSocketAddress(), Report& report = CERR)
         {
             return setAddressesInternal(listener, caller, local, true, report);
         }
@@ -229,6 +229,6 @@ namespace ts {
         Guts* _guts;
 
         // Internal verson of setAddresses().
-        bool setAddressesInternal(const IPSocketAddress& listener, const IPSocketAddress& caller, const IPAddress& local, bool reset, Report& report);
+        bool setAddressesInternal(const IPSocketAddress& listener, const IPSocketAddress& caller, const IPSocketAddress& local, bool reset, Report& report);
     };
 }
